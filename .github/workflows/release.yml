@@ -1,0 +1,11 @@
+name: release
+on:
+  push:
+    tags: ["v*"]
+jobs:
+  pack:
+    uses: miyu-agent/packages/.github/workflows/pack.yml@main
+    permissions:
+      contents: write
+    with:
+      package: miyu-scripts-ai-draw

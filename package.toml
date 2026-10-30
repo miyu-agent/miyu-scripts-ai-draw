@@ -1,0 +1,94 @@
+[package]
+version = "0.1.0"
+name = { en = "AI drawing", zh = "AI 生图" }
+summary = { en = "Draw pictures with GPT Image (or a compatible relay such as RightCode), optionally from reference images", zh = "用 GPT 生图画图（也接 RightCode 这类兼容的中转），可以带参考图" }
+author = "SHORiN-KiWATA"
+icon = "palette"
+needs = ["images"]
+
+# 配置项都在调用那一刻读，改了下一次调用就用上。
+
+[settings.base_url]
+type = "url"
+default = "https://api.openai.com/v1"
+applies = "now"
+name = { en = "API address", zh = "接口地址" }
+description = { en = "OpenAI: leave as is. RightCode: https://www.right.codes/draw. /v1 is appended when the address does not end in a version.", zh = "用 OpenAI 的不用改；用 RightCode 的填 https://www.right.codes/draw。末尾没有 /v1 这类版本号的会自动补上 /v1。" }
+
+[settings.api_key]
+type = "secret"
+applies = "now"
+name = { en = "API key", zh = "API Key" }
+
+[settings.model]
+type = "text"
+max = 100
+default = "gpt-image-1"
+applies = "now"
+name = { en = "Model", zh = "模型" }
+description = { en = "For example gpt-image-1, or gpt-image-2 on RightCode.", zh = "例如 gpt-image-1；RightCode 上是 gpt-image-2。" }
+
+[settings.aspect_ratio]
+type = "option"
+choices = ["auto", "1:1", "2:3", "3:2", "3:4", "4:3", "4:5", "5:4", "9:16", "16:9", "21:9"]
+default = "auto"
+applies = "now"
+name = { en = "Default aspect ratio", zh = "默认宽高比" }
+description = { en = "Used when the AI does not pick one.", zh = "AI 没指定时用这个。" }
+
+[settings.resolution]
+type = "option"
+choices = ["1K", "2K", "4K"]
+default = "1K"
+applies = "now"
+name = { en = "Default resolution", zh = "默认清晰度" }
+description = { en = "Only RightCode uses it, and it decides the final size itself: in a 2026-10-30 test, 1K square came back 1254×1254 and 2K 16:9 came back 1672×940. OpenAI ignores it.", zh = "只有 RightCode 认，实际多大由它定：2026-10-30 实测 1K 方图交回 1254×1254，2K 的 16:9 交回 1672×940。OpenAI 不看这一项。" }
+
+[settings.size]
+type = "text"
+max = 20
+applies = "now"
+name = { en = "Fixed size", zh = "固定尺寸" }
+description = { en = "Such as 1024x1024 or auto. When set, every image is this size and the aspect ratio and resolution are ignored.", zh = "例如 1024x1024 或 auto。填了就每张都照这个尺寸，宽高比、清晰度都不看。" }
+
+[settings.quality]
+type = "option"
+choices = ["auto", "low", "medium", "high"]
+default = "auto"
+applies = "now"
+name = { en = "Quality", zh = "画质" }
+description = { en = "Higher costs more and takes longer. auto sends nothing and leaves it to the service.", zh = "越高越贵、越慢。auto 不传，由服务自己定。" }
+
+[settings.output_format]
+type = "option"
+choices = ["png", "jpeg", "webp"]
+default = "png"
+applies = "now"
+name = { en = "File format", zh = "图片格式" }
+description = { en = "GPT Image models only. jpeg and webp are smaller, so large images still fit what the AI can look at (5 MiB).", zh = "只有 GPT Image 模型认。jpeg、webp 小，大图也能塞进 AI 看得了的 5 MiB。" }
+
+[settings.background]
+type = "option"
+choices = ["auto", "transparent", "opaque"]
+default = "auto"
+applies = "now"
+name = { en = "Background", zh = "背景" }
+description = { en = "GPT Image models only. transparent needs png or webp.", zh = "只有 GPT Image 模型认。透明背景要配 png 或 webp。" }
+
+[settings.moderation]
+type = "option"
+choices = ["auto", "low"]
+default = "auto"
+applies = "now"
+name = { en = "Content filter", zh = "内容审核" }
+description = { en = "GPT Image models on OpenAI only: low filters less strictly.", zh = "只有 OpenAI 的 GPT Image 模型认：low 审得松一些。" }
+
+[settings.timeout]
+type = "int"
+min = 30
+max = 280
+default = 240
+applies = "now"
+name = { en = "Timeout (seconds)", zh = "超时（秒）" }
+description = { en = "How long to wait for one image. High quality and large sizes can take minutes.", zh = "等一张图最多等多久。高画质、大尺寸要几分钟也正常。" }
+
