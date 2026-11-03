@@ -467,9 +467,9 @@ def main():
 
     # 本机会话给用户的图片目录，存了就是人的；群里这类会话没有，退回缓存、只留最近几张
     pictures = os.environ.get("MIYU_PICTURES_DIR")
-    base = pictures or os.environ.get("MIYU_SCRIPT_CACHE_DIR")
+    base = pictures or os.environ.get("MIYU_CACHE_DIR")
     if not base:
-        fail("没有图片目录也没有脚本缓存目录（MIYU_PICTURES_DIR、MIYU_SCRIPT_CACHE_DIR），要在 Miyu 里调")
+        fail("没有图片目录也没有脚本缓存目录（MIYU_PICTURES_DIR、MIYU_CACHE_DIR），要在 Miyu 里调")
     folder = os.path.join(base, "AI生图" if pictures else "images")
     try:
         os.makedirs(folder, exist_ok=True)
@@ -488,7 +488,7 @@ def main():
     if not pictures:
         prune(folder, keep=KEEP_CACHED)
 
-    attach_dir = os.environ.get("MIYU_SCRIPT_IMAGES_DIR")
+    attach_dir = os.environ.get("MIYU_IMAGES_DIR")
     attached = bool(attach_dir) and len(data) <= ATTACH_BYTES and max(width, height) <= ATTACH_SIDE
     if attached:
         shutil.copy(path, os.path.join(attach_dir, os.path.basename(path)))
