@@ -1,5 +1,5 @@
 [package]
-version = "0.1.1"
+version = "0.1.2"
 name = { en = "AI drawing", zh = "AI 生图" }
 summary = { en = "Draw pictures with GPT Image (or a compatible relay such as RightCode), optionally from reference images", zh = "用 GPT 生图画图（也接 RightCode 这类兼容的中转），可以带参考图" }
 author = "SHORiN-KiWATA"
