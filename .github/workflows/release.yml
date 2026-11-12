@@ -8,4 +8,4 @@ jobs:
     permissions:
       contents: write
     with:
-      package: miyu-scripts-ai-draw
+      package: ai-draw
