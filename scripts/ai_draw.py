@@ -196,6 +196,9 @@ def sniff(data):
                 i += 1
                 continue
             marker = data[i + 1]
+            if marker == 0xFF:
+                i += 1
+                continue
             if marker in (0xD8, 0x01) or 0xD0 <= marker <= 0xD7:
                 i += 2
                 continue
