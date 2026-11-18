@@ -13,7 +13,7 @@ type = "url"
 default = "https://api.openai.com/v1"
 applies = "now"
 name = { en = "API address", zh = "接口地址" }
-description = { en = "OpenAI: leave as is. RightCode: https://www.right.codes/draw. /v1 is appended when the address does not end in a version.", zh = "用 OpenAI 的不用改；用 RightCode 的填 https://www.right.codes/draw。末尾没有 /v1 这类版本号的会自动补上 /v1。" }
+description = { en = "OpenAI: leave as is. RightCode: https://api.site/draw. /v1 is appended when the address does not end in a version.", zh = "用 OpenAI 的不用改；用 RightCode 的填 https://api.site/draw。末尾没有 /v1 这类版本号的会自动补上 /v1。" }
 
 [settings.api_key]
 type = "secret"

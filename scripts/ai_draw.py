@@ -97,9 +97,13 @@ def endpoint(base_url, path):
     return f"{base}/{path}"
 
 
+# RightCode 的接口域名：2026-11 起国内用 api.site，旧的 right.codes、rightapi.ai 海外照旧能用。
+RIGHTCODE_HOSTS = ("api.site", "right.codes", "rightapi.ai")
+
+
 def is_rightcode(base_url):
     host = (urllib.parse.urlsplit(base_url).hostname or "").lower()
-    return host == "right.codes" or host.endswith(".right.codes")
+    return any(host == name or host.endswith("." + name) for name in RIGHTCODE_HOSTS)
 
 
 def is_gpt_image(model):

@@ -8,7 +8,7 @@ Miyu 的脚本包，带一件工具 `ai_draw`：照文字画一张图，可以�
 
 | 项 | 默认 | 说明 |
 |---|---|---|
-| 接口地址 | `https://api.openai.com/v1` | 用 OpenAI 的不用改；用 RightCode 的填 `https://www.right.codes/draw`。末尾没有 `/v1` 这类版本号的会自动补上 `/v1` |
+| 接口地址 | `https://api.openai.com/v1` | 用 OpenAI 的不用改；用 RightCode 的填 `https://api.site/draw`（旧的 `https://www.right.codes/draw` 海外照旧能用）。末尾没有 `/v1` 这类版本号的会自动补上 `/v1` |
 | API Key | 无 | 必填 |
 | 模型 | `gpt-image-1` | RightCode 上是 `gpt-image-2` |
 | 默认宽高比 | `auto` | AI 没指定时用这个 |
@@ -33,7 +33,7 @@ Miyu 的脚本包，带一件工具 `ai_draw`：照文字画一张图，可以�
 
 ## 行为
 
-- **两套接口照地址认**：接口地址的域名是 `right.codes` 的走 RightCode 那套：参考图以 base64 数组放进 `/v1/images/generations` 的 JSON，带宽高比和它的尺寸表。别的走 OpenAI 那套：没有参考图的走 `/v1/images/generations`，有的走 `/v1/images/edits`（multipart，字段 `image[]`）。
+- **两套接口照地址认**：接口地址的域名是 `api.site`、`right.codes`、`rightapi.ai` 的走 RightCode 那套：参考图以 base64 数组放进 `/v1/images/generations` 的 JSON，带宽高比和它的尺寸表。别的走 OpenAI 那套：没有参考图的走 `/v1/images/generations`，有的走 `/v1/images/edits`（multipart，字段 `image[]`）。
 - 尺寸：RightCode 照宽高比和清晰度查表请求（表照旧版，2K、4K 请求长边 2048），交回多大由它定；GPT Image 模型竖的 `1024x1536`、横的 `1536x1024`、方的 `1024x1024`、`auto` 交给服务；别的模型（DALL·E 这类）`1024x1792`、`1792x1024`、`1024x1024`。
 - 存到图片目录（MIYU_PICTURES_DIR）下的 `AI生图/<时间>-<提示词开头>.png`，不自动清。群聊、陌生人私聊这类会话没有图片目录，退回脚本缓存目录（MIYU_CACHE_DIR）下的 `images/`，只留最近 20 张。不往工作区写东西。
 - 附给 AI 看的图照 Miyu 的规格：不超过 5 MiB、每边不超过 8000 像素；大了的只存不附（图片格式换成 jpeg、webp 就小了）。
