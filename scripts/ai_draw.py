@@ -117,17 +117,66 @@ def public_url(url):
         return False
     if parts.scheme not in ("http", "https") or not parts.hostname:
         return False
+    return bool(public_addresses(parts.hostname, parts.port))
+
+
+def public_addresses(host, port):
+    """Resolve once; return the addresses if every one is public, else []."""
     try:
-        infos = socket.getaddrinfo(parts.hostname, parts.port or None, proto=socket.IPPROTO_TCP)
+        infos = socket.getaddrinfo(host, port or None, proto=socket.IPPROTO_TCP)
     except (socket.gaierror, UnicodeError):
-        return False
+        return []
     for info in infos:
         address = ipaddress.ip_address(info[4][0].split("%", 1)[0])
         if address.version == 6 and address.ipv4_mapped:
             address = address.ipv4_mapped
         if not address.is_global and address not in FAKE_IP:
-            return False
-    return bool(infos)
+            return []
+    return infos
+
+
+def connect_public(address, timeout, source_address=None):
+    # 连的就是刚查过的那个地址，中间不再解析，换了解析也连不到本机、内网
+    host, port = address
+    infos = public_addresses(host, port)
+    if not infos:
+        raise OSError(f"not a public address: {host}")
+    error = None
+    for info in infos:
+        try:
+            return socket.create_connection(info[4][:2], timeout, source_address)
+        except OSError as exc:
+            error = exc
+    raise error
+
+
+class PinnedHTTPConnection(http.client.HTTPConnection):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._create_connection = connect_public
+
+
+class PinnedHTTPSConnection(http.client.HTTPSConnection):
+    # SNI 和证书核对照旧用主机名，只有建 TCP 连接用查过的地址
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._create_connection = connect_public
+
+
+def proxied(req):
+    # 走代理时连的是代理、目标由代理解析，照旧连
+    return req.has_proxy() or bool(req._tunnel_host)
+
+
+class PinnedHTTPHandler(urllib.request.HTTPHandler):
+    def http_open(self, req):
+        return self.do_open(http.client.HTTPConnection if proxied(req) else PinnedHTTPConnection, req)
+
+
+class PinnedHTTPSHandler(urllib.request.HTTPSHandler):
+    def https_open(self, req):
+        return self.do_open(http.client.HTTPSConnection if proxied(req) else PinnedHTTPSConnection, req,
+                            context=self._context)
 
 
 class GuardedRedirect(urllib.request.HTTPRedirectHandler):
@@ -137,7 +186,7 @@ class GuardedRedirect(urllib.request.HTTPRedirectHandler):
         return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 
-GUARDED = urllib.request.build_opener(GuardedRedirect)
+GUARDED = urllib.request.build_opener(GuardedRedirect, PinnedHTTPHandler, PinnedHTTPSHandler)
 # 接口地址是管理员填的，可以是本机的中转，不查公网
 DIRECT = urllib.request.build_opener()
 
