@@ -192,3 +192,21 @@ class PinnedAddress(Sandbox):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class RightCodeAddress(unittest.TestCase):
+    """RightCode 换了域名（2026-11）：新旧地址都走 RightCode 那套，别家的不算。"""
+
+    def setUp(self):
+        self.mod = load()
+
+    def test_new_api_address(self):
+        self.assertTrue(self.mod.is_rightcode("https://api.site/draw"))
+
+    def test_old_addresses(self):
+        for url in ("https://www.right.codes/draw", "https://right.codes/draw", "https://rightapi.ai/draw"):
+            self.assertTrue(self.mod.is_rightcode(url), url)
+
+    def test_others_are_not(self):
+        for url in ("https://api.openai.com/v1", "https://evil-api.site/draw", "https://api.site.example.com/draw"):
+            self.assertFalse(self.mod.is_rightcode(url), url)
